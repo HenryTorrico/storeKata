@@ -56,21 +56,21 @@ public class Order {
 		float totalItems = 0;
 		for (OrderItem item : items) {
 			float totalItem=0;
-			float itemAmount = item.getProduct().getUnitPrice() * item.getQuantity();
-			if (item.getProduct().getCategory() == ProductCategory.Accessories) {
+			float itemAmount = getAmount(item);
+			if (isAccesory(item)) {
 				float booksDiscount = 0;
-				if (itemAmount >= 100) {
+				if (applyAccesoryDiscount(itemAmount)) {
 					booksDiscount = itemAmount * 10 / 100;
 				}
 				totalItem = itemAmount - booksDiscount;
 			}
-			if (item.getProduct().getCategory() == ProductCategory.Bikes) {
+			if (isBike(item)) {
 				// 20% discount for Bikes
 				totalItem = itemAmount - itemAmount * 20 / 100;
 			}
-			if (item.getProduct().getCategory() == ProductCategory.Cloathing) {
+			if (isCloth(item)) {
 				float cloathingDiscount = 0;
-				if (item.getQuantity() > 2) {
+				if (applyClothDiscount(item)) {
 					cloathingDiscount = item.getProduct().getUnitPrice();
 				}
 				totalItem = itemAmount - cloathingDiscount;
@@ -78,12 +78,40 @@ public class Order {
 			totalItems += totalItem;
 		}
 
-		if (this.deliveryCountry == "USA"){
+		if (isDeliveryInUsa()){
 			// total=totalItems + tax + 0 shipping
 			return totalItems + totalItems * 5 / 100;
 		}
 
 		// total=totalItemst + tax + 15 shipping
 		return totalItems + totalItems * 5 / 100 + 15;
+	}
+
+	private boolean isDeliveryInUsa() {
+		return this.deliveryCountry == "USA";
+	}
+
+	private boolean applyClothDiscount(OrderItem item) {
+		return item.getQuantity() > 2;
+	}
+
+	private boolean isCloth(OrderItem item) {
+		return item.getProduct().getCategory() == ProductCategory.Cloathing;
+	}
+
+	private boolean isBike(OrderItem item) {
+		return item.getProduct().getCategory() == ProductCategory.Bikes;
+	}
+
+	private boolean applyAccesoryDiscount(float itemAmount) {
+		return itemAmount >= 100;
+	}
+
+	private boolean isAccesory(OrderItem item) {
+		return item.getProduct().getCategory() == ProductCategory.Accessories;
+	}
+
+	private float getAmount(OrderItem item) {
+		return item.getProduct().getUnitPrice() * item.getQuantity();
 	}
 }
