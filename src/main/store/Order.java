@@ -53,30 +53,7 @@ public class Order {
 	}
 
 	public float total() {
-		float totalItems = 0;
-		for (OrderItem item : items) {
-			float totalItem=0;
-			float itemAmount = getAmount(item);
-			if (isAccesory(item)) {
-				float booksDiscount = 0;
-				if (applyAccesoryDiscount(itemAmount)) {
-					booksDiscount = itemAmount * 10 / 100;
-				}
-				totalItem = itemAmount - booksDiscount;
-			}
-			if (isBike(item)) {
-				// 20% discount for Bikes
-				totalItem = itemAmount - itemAmount * 20 / 100;
-			}
-			if (isCloth(item)) {
-				float cloathingDiscount = 0;
-				if (applyClothDiscount(item)) {
-					cloathingDiscount = item.getProduct().getUnitPrice();
-				}
-				totalItem = itemAmount - cloathingDiscount;
-			}
-			totalItems += totalItem;
-		}
+		float totalItems = calculateTotalForItems();
 
 		if (isDeliveryInUsa()){
 			// total=totalItems + tax + 0 shipping
@@ -85,6 +62,46 @@ public class Order {
 
 		// total=totalItemst + tax + 15 shipping
 		return totalItems + totalItems * 5 / 100 + 15;
+	}
+
+	private float calculateTotalForItems() {
+		float totalItems = 0;
+		for (OrderItem item : items) {
+			float totalItem=0;
+			float itemAmount = getAmount(item);
+			if (isAccesory(item)) {
+				float booksDiscount = 0;
+				if (applyAccesoryDiscount(itemAmount)) {
+					booksDiscount = discountForBook(itemAmount);
+				}
+				totalItem = discountForCloth(itemAmount, booksDiscount);
+			}
+			if (isBike(item)) {
+				// 20% discount for Bikes
+				totalItem = discountForBike(itemAmount);
+			}
+			if (isCloth(item)) {
+				float cloathingDiscount = 0;
+				if (applyClothDiscount(item)) {
+					cloathingDiscount = item.getProduct().getUnitPrice();
+				}
+				totalItem = discountForCloth(itemAmount, cloathingDiscount);
+			}
+			totalItems += totalItem;
+		}
+		return totalItems;
+	}
+
+	private float discountForCloth(float itemAmount, float cloathingDiscount) {
+		return itemAmount - cloathingDiscount;
+	}
+
+	private float discountForBike(float itemAmount) {
+		return itemAmount - itemAmount * 20 / 100;
+	}
+
+	private float discountForBook(float itemAmount) {
+		return itemAmount * 10 / 100;
 	}
 
 	private boolean isDeliveryInUsa() {
