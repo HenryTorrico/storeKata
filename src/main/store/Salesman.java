@@ -23,12 +23,28 @@ public class Salesman extends Employee {
 	}
 
 	public float netSalary() {
-		float benefits = monthQuota * commissionPorcentage / 100;
-		float pensionFounds = fixedSalary * 10 / 100;
+		float benefits = itsBenefits();
+		float pensionFounds = pensionFounds();
 		float tax = 0;
-		if (fixedSalary > 3500)
-			tax = fixedSalary * 5 / 100;
+		if (applyTax())
+			tax = tax();
 		return fixedSalary+benefits - pensionFounds - tax;
+	}
+
+	private float tax() {
+		return fixedSalary * 5 / 100;
+	}
+
+	private boolean applyTax() {
+		return fixedSalary > 3500;
+	}
+
+	private float pensionFounds() {
+		return fixedSalary * 10 / 100;
+	}
+
+	private float itsBenefits() {
+		return monthQuota * commissionPorcentage / 100;
 	}
 
 	public void updateMonthQuota(float addQuota) {

@@ -8,11 +8,23 @@ public class Manager extends Employee {
 
 	public float salaryAfterAdditionsAndDeductions() {
 		float benefits = salaryBenefits();
-		float pensionFounds = this.fixedSalary * 10 / 100;
+		float pensionFounds = pensionFounds();
 		float tax = 0;
-		if (fixedSalary > 3500)
-			tax = fixedSalary * 5 / 100;
+		if (applyTax())
+			tax = tax();
 		return fixedSalary + benefits - pensionFounds - tax;
+	}
+
+	private float tax() {
+		return fixedSalary * 5 / 100;
+	}
+
+	private boolean applyTax() {
+		return fixedSalary > 3500;
+	}
+
+	private float pensionFounds() {
+		return this.fixedSalary * 10 / 100;
 	}
 
 	private float salaryBenefits() {
