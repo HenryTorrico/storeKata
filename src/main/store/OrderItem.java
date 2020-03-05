@@ -1,5 +1,8 @@
 package store;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class OrderItem {
 	
 	private Product product;
@@ -24,56 +27,31 @@ public class OrderItem {
 	float calculateTotalForItem() {
 		float totalItem=0;
 		float discount = 0;
-		float itemAmount = calculateTotalAmount();
-		if (isAccesory(this)) {
-			if (applyAccesoryDiscount(itemAmount)) {
-				discount = discountForBook(itemAmount);
-			}
-			totalItem = discountForCloth(itemAmount, discount);
+		DiscountCalculator discountCalculator = createDiscountCalculator();
+		discount = discountCalculator.calculateDiscount(this);
+		totalItem = calculateTotalAmount() - discount;
+		return totalItem;
+	}
+
+	private DiscountCalculator createDiscountCalculator() {
+		Map<ProductCategory, DiscountCalculator> mapProductDiscount = new HashMap<ProductCategory, DiscountCalculator>();
+		mapProductDiscount.put(ProductCategory.Accessories, new AccessoryDiscount());
+		mapProductDiscount.put(ProductCategory.Bikes, new BikeDiscount());
+		mapProductDiscount.put(ProductCategory.Cloathing, new ClothDiscount());
+		
+		DiscountCalculator discountCalculator = null;
+		
+		
+		if (getProduct().getCategory() == ProductCategory.Accessories) {
+			discountCalculator = new AccessoryDiscount();
 		}
-		if (isBike(this)) {
-			// 20% discount for Bikes
-			totalItem = discountForBike(itemAmount);
+		if (getProduct().getCategory() == ProductCategory.Bikes) {
+			discountCalculator = new BikeDiscount();
 		}
-		if (isCloth(this)) {
-			if (applyClothDiscount(this)) {
-				discount = this.getProduct().getUnitPrice();
-			}
-			totalItem = discountForCloth(itemAmount, discount);
+		if (getProduct().getCategory() == ProductCategory.Cloathing) {
+			discountCalculator = new ClothDiscount();
 		}
-		return totalItem;	
-	}
-	public float discountForCloth(float itemAmount, float cloathingDiscount) {
-		return itemAmount - cloathingDiscount;
-	}
-
-	public float discountForBike(float itemAmount) {
-		return itemAmount - itemAmount * 20 / 100;
-	}
-
-	public float discountForBook(float itemAmount) {
-		return itemAmount * 10 / 100;
-	}
-
-
-	public boolean applyClothDiscount(OrderItem item) {
-		return item.getQuantity() > 2;
-	}
-
-	public boolean isCloth(OrderItem item) {
-		return item.getProduct().getCategory() == ProductCategory.Cloathing;
-	}
-
-	public boolean isBike(OrderItem item) {
-		return item.getProduct().getCategory() == ProductCategory.Bikes;
-	}
-
-	public boolean applyAccesoryDiscount(float itemAmount) {
-		return itemAmount >= 100;
-	}
-
-	public boolean isAccesory(OrderItem item) {
-		return item.getProduct().getCategory() == ProductCategory.Accessories;
+		return mapProductDiscount.get(getProduct().getCategory());
 	}
 	float calculateTotalAmount() {
 		return getProduct().getUnitPrice() * getQuantity();
