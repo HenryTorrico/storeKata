@@ -24,7 +24,7 @@ public class OrderItem {
 	float calculateTotalForItem() {
 		float totalItem=0;
 		float discount = 0;
-		float itemAmount = getAmount(this);
+		float itemAmount = calculateTotalAmount();
 		if (isAccesory(this)) {
 			if (applyAccesoryDiscount(itemAmount)) {
 				discount = discountForBook(itemAmount);
@@ -43,40 +43,40 @@ public class OrderItem {
 		}
 		return totalItem;	
 	}
-	private float discountForCloth(float itemAmount, float cloathingDiscount) {
+	public float discountForCloth(float itemAmount, float cloathingDiscount) {
 		return itemAmount - cloathingDiscount;
 	}
 
-	private float discountForBike(float itemAmount) {
+	public float discountForBike(float itemAmount) {
 		return itemAmount - itemAmount * 20 / 100;
 	}
 
-	private float discountForBook(float itemAmount) {
+	public float discountForBook(float itemAmount) {
 		return itemAmount * 10 / 100;
 	}
 
 
-	private boolean applyClothDiscount(OrderItem item) {
+	public boolean applyClothDiscount(OrderItem item) {
 		return item.getQuantity() > 2;
 	}
 
-	private boolean isCloth(OrderItem item) {
+	public boolean isCloth(OrderItem item) {
 		return item.getProduct().getCategory() == ProductCategory.Cloathing;
 	}
 
-	private boolean isBike(OrderItem item) {
+	public boolean isBike(OrderItem item) {
 		return item.getProduct().getCategory() == ProductCategory.Bikes;
 	}
 
-	private boolean applyAccesoryDiscount(float itemAmount) {
+	public boolean applyAccesoryDiscount(float itemAmount) {
 		return itemAmount >= 100;
 	}
 
-	private boolean isAccesory(OrderItem item) {
+	public boolean isAccesory(OrderItem item) {
 		return item.getProduct().getCategory() == ProductCategory.Accessories;
 	}
-	private float getAmount(OrderItem item) {
-		return item.getProduct().getUnitPrice() * item.getQuantity();
+	float calculateTotalAmount() {
+		return getProduct().getUnitPrice() * getQuantity();
 	}
 }
 
