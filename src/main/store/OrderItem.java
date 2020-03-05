@@ -26,24 +26,22 @@ public class OrderItem {
 		float discount = 0;
 		float itemAmount = getAmount(this);
 		if (isAccesory(this)) {
-			float booksDiscount = 0;
 			if (applyAccesoryDiscount(itemAmount)) {
-				booksDiscount = discountForBook(itemAmount);
+				discount = discountForBook(itemAmount);
 			}
-			totalItem = discountForCloth(itemAmount, booksDiscount);
+			totalItem = discountForCloth(itemAmount, discount);
 		}
 		if (isBike(this)) {
 			// 20% discount for Bikes
 			totalItem = discountForBike(itemAmount);
 		}
 		if (isCloth(this)) {
-			float cloathingDiscount = 0;
 			if (applyClothDiscount(this)) {
-				cloathingDiscount = this.getProduct().getUnitPrice();
+				discount = this.getProduct().getUnitPrice();
 			}
-			totalItem = discountForCloth(itemAmount, cloathingDiscount);
+			totalItem = discountForCloth(itemAmount, discount);
 		}
-		return totalItem;
+		return totalItem;	
 	}
 	private float discountForCloth(float itemAmount, float cloathingDiscount) {
 		return itemAmount - cloathingDiscount;
